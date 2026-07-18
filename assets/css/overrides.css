@@ -1,0 +1,968 @@
+/*------------------------------------------------------------------
+    [Custom Overrides for Habibi Wedding Template Replica]
+-------------------------------------------------------------------*/
+
+/* ==========================================
+   INTERACTIVE FLOATING ENVELOPE PRELOADER
+=========================================== */
+#invitation-envelope {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, #ffffff 0%, #F1F3EE 40%, #e5e8e0 100%);
+    z-index: 99999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: opacity 0.8s ease-in-out, visibility 0.8s ease-in-out;
+}
+
+#invitation-envelope.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+html.scroll-lock, body.scroll-lock {
+    overflow: hidden !important;
+    height: 100% !important;
+}
+
+/* Center card content wrapper to frame design aesthetically on all screen sizes */
+.preloader-content-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    max-width: 420px;
+    max-height: 850px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center; /* Improvement #3: Tighter vertical spacing — centered instead of space-between */
+    gap: 20px;
+    padding: 40px 20px;
+    box-sizing: border-box;
+    overflow: hidden;
+    background: transparent;
+    box-shadow: none;
+}
+
+/* Watercolor center wash */
+.water-color-splash {
+    position: absolute;
+    top: 48%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    height: 90%;
+    max-width: 500px;
+    max-height: 500px;
+    background: radial-gradient(circle, rgba(193, 208, 190, 0.45) 0%, rgba(193, 208, 190, 0.18) 45%, rgba(255, 255, 255, 0) 70%);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 50% 60% 45% 55% / 55% 45% 60% 50%; /* Organic watercolor blot shape */
+    filter: blur(10px); /* Softens the paper bleed edge */
+}
+
+
+
+/* Monogram Container */
+.monogram-container {
+    z-index: 3;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 5px;
+}
+
+.monogram-circle {
+    border: 1px solid rgba(75, 84, 71, 0.45); /* Elegant thin oval outline */
+    border-radius: 50%; /* Ellipse shape */
+    width: 52px;
+    height: 82px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif !important;
+    font-size: 22px;
+    letter-spacing: 0.5px;
+    color: #3b4437;
+    font-weight: normal;
+    background: transparent; /* Transparent background to let the watercolor wash show through */
+    box-shadow: none;
+}
+
+/* Inviting Text — Improvement #1: Staggered entrance + #6: Darkened for accessibility */
+.invitation-heading {
+    text-align: center;
+    z-index: 3;
+    padding: 0 10px;
+    margin-top: -60px; /* Shift text higher */
+    margin-bottom: 110px; /* Push envelope lower to create enough space for 122px flap */
+    opacity: 0;
+    animation: slideDown 0.7s ease-out 0.3s forwards;
+}
+
+.invitation-heading .together-text {
+    font-family: 'Jost', sans-serif !important;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+    color: #2d3a28; /* Darkened for WCAG AA contrast */
+    font-weight: 500;
+    display: block;
+    margin-bottom: 4px;
+}
+
+
+.invitation-heading h2 {
+    font-family: 'Sail', cursive !important;
+    font-size: 38px;
+    color: #3a4d30; /* Darkened olive for readability */
+    margin: 5px 0;
+    font-weight: normal;
+}
+
+/* Watermark Ornaments from main site */
+.preloader-bg-flower {
+    position: absolute;
+    width: 250px;
+    height: 500px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.08; /* Subtle watermark opacity */
+    pointer-events: none;
+    z-index: 1;
+}
+
+.preloader-bg-flower.left-flower {
+    background-image: url('../images/flower-left.svg');
+    left: 10px;
+    top: 15%;
+    background-position: left center;
+}
+
+.preloader-bg-flower.right-flower {
+    background-image: url('../images/flower-right.svg');
+    right: 10px;
+    bottom: 15%;
+    background-position: right center;
+}
+
+/* Deep Olive Green Interactive Envelope — Improvement #1 & #4: Entrance + floating animation */
+.wrapper {
+  height: 226px;
+  width: 320px;
+  background-color: #4b5a3b;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  z-index: 3;
+  cursor: pointer;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.12), 0 10px 25px rgba(75, 90, 59, 0.08);
+  border-radius: 6px;
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  margin-top: 5px;
+  opacity: 0;
+  animation: envelopeEntrance 0.6s ease-out 0.7s forwards, envelopeFloat 3s ease-in-out 1.5s infinite;
+}
+
+.wrapper:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 28px 55px rgba(0, 0, 0, 0.16), 0 14px 30px rgba(75, 90, 59, 0.12);
+}
+
+/* Stop floating when opened — allow lid and letter to overflow */
+.wrapper.opened {
+  animation: envelopeEntrance 0.6s ease-out 0s forwards;
+  overflow: visible;
+}
+
+.lid {
+  position: absolute;
+  height: 54%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  transform-origin: top center;
+  transition: transform 1s cubic-bezier(0.25, 1, 0.5, 1), backface-visibility 0s, z-index 0s, opacity 0.5s ease;
+  transform-style: preserve-3d;
+}
+
+/* Front side of the flap (seen when closed) - Deep Olive Green */
+.lid.one {
+  background-image: linear-gradient(180deg, rgba(109, 127, 92, 0.85) 0%, rgba(93, 110, 77, 0.95) 100%), url('../images/envelope_texture.png');
+  background-size: 100% 100%, 300px;
+  background-blend-mode: multiply;
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  z-index: 4;
+  transition-delay: 0.5s;
+  backface-visibility: hidden;
+  filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.2)); /* Realistic deeper shadow */
+}
+
+/* Back side of the flap (seen when opened) */
+.lid.two {
+  background: linear-gradient(180deg, #556449 0%, #4b5a3b 100%);
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  transform: rotateX(180deg);
+  z-index: 1;
+  transition-delay: 0s;
+  backface-visibility: hidden;
+}
+
+/* Envelope pocket folds */
+.envelope {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+/* Left fold */
+.envelope::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(30deg, rgba(93, 110, 77, 0.95) 0%, rgba(109, 127, 92, 0.85) 100%), url('../images/envelope_texture.png');
+  background-size: 100% 100%, 300px;
+  background-blend-mode: multiply;
+  clip-path: polygon(0 0, 50% 50%, 0 100%);
+}
+
+/* Right fold */
+.envelope::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(-30deg, rgba(93, 110, 77, 0.95) 0%, rgba(109, 127, 92, 0.85) 100%), url('../images/envelope_texture.png');
+  background-size: 100% 100%, 300px;
+  background-blend-mode: multiply;
+  clip-path: polygon(100% 0, 50% 50%, 100% 100%);
+}
+
+/* Bottom fold */
+.envelope-bottom {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: linear-gradient(0deg, rgba(80, 95, 65, 0.95) 0%, rgba(93, 110, 77, 0.85) 100%), url('../images/envelope_texture.png');
+  background-size: 100% 100%, 300px;
+  background-blend-mode: multiply;
+  clip-path: polygon(0 100%, 100% 100%, 50% 50%);
+  z-index: 3;
+  box-shadow: inset 0 12px 25px rgba(0, 0, 0, 0.15); /* Realistic deeper inner shadow */
+}
+
+.letter {
+  position: absolute;
+  bottom: 10px;
+  width: 92%;
+  height: 85%;
+  background-color: #ffffff;
+  border-radius: 4px;
+  z-index: 2;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  transform: translateY(0);
+}
+
+.letter-inner {
+  border: 1px solid #c1d0be;
+  width: calc(100% - 16px);
+  height: calc(100% - 16px);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.invite-tag {
+  font-family: 'Jost', sans-serif !important;
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: #798c73;
+  margin-bottom: 6px;
+}
+
+.letter-inner h3 {
+  font-family: 'Sail', cursive !important;
+  font-size: 28px;
+  color: #444444;
+  margin: 4px 0;
+}
+
+.invite-date {
+  font-family: 'Jost', sans-serif !important;
+  font-size: 10px;
+  color: #888888;
+  margin-top: 4px;
+}
+
+/* Tactile Antique Gold Wax Seal — Improvement #2: Hover glow */
+.wax-seal {
+  position: absolute;
+  top: 54%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 46px;
+  height: 46px;
+  background: radial-gradient(circle, #e6c56c 0%, #c59f3d 100%);
+  border-radius: 50%;
+  z-index: 5;
+  box-shadow: 0 5px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(77, 58, 14, 0.15), inset 0 2px 3px rgba(255, 255, 255, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease, box-shadow 0.3s ease;
+  border: 2px solid #b89230;
+  animation: sealPulse 2s ease-in-out 2s infinite;
+}
+
+.wax-seal:hover {
+  transform: translate(-50%, -50%) scale(1.15);
+  box-shadow: 0 0 20px rgba(230, 197, 108, 0.6), 0 0 40px rgba(197, 159, 61, 0.3), 0 5px 12px rgba(0, 0, 0, 0.16), inset 0 2px 3px rgba(255, 255, 255, 0.35);
+}
+
+.wax-seal::before {
+  content: 'A';
+  font-family: 'Sail', cursive !important;
+  font-size: 22px;
+  color: #7d5e16;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.25);
+  font-weight: bold;
+}
+
+/* Opened/Clicked states for transition into site */
+.wrapper.opened .lid.one {
+    transform: rotateX(-180deg); /* Flip backward around top edge — shows as inverted triangle above envelope */
+    z-index: 1; /* Stay behind the letter (z-index: 2) so letter pops out in front of it */
+    transition-delay: 0.1s;
+    backface-visibility: visible !important; /* Force visible */
+    filter: drop-shadow(0 -4px 8px rgba(0, 0, 0, 0.1)); /* Shadow now falls upward */
+}
+
+.wrapper.opened .lid.two {
+    transform: rotateX(-360deg); /* Hide by flipping away */
+    z-index: 0;
+    opacity: 0;
+    transition-delay: 0.1s;
+}
+
+.wrapper.opened .letter {
+  transform: translateY(-70px) scale(1.02); /* Pop up less so the inverted triangle flap is visible behind it */
+  transition-delay: 0.6s;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Elevated letter shadow */
+}
+
+.wrapper.opened .wax-seal {
+  transform: translate(-50%, -50%) scale(0) rotate(-45deg);
+  opacity: 0;
+  transition-delay: 0s;
+}
+
+/* Improvement #1: CTA staggered entrance + refined pulse */
+.click-to-open {
+    font-family: 'Jost', sans-serif !important;
+    font-size: 13px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #2d3a28;
+    font-weight: 500;
+    margin-bottom: 25px;
+    z-index: 3;
+    opacity: 0;
+    animation: ctaEntrance 0.5s ease-out 1.6s forwards;
+}
+
+/* ==========================================
+   PRELOADER KEYFRAME ANIMATIONS
+=========================================== */
+
+/* Staggered entrance: Text slides down from above */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-25px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Staggered entrance: Envelope scales up into view */
+@keyframes envelopeEntrance {
+    from {
+        opacity: 0;
+        transform: scale(0.85);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Improvement #4: Subtle floating bob animation on envelope */
+@keyframes envelopeFloat {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-8px) scale(1);
+    }
+}
+
+/* Staggered entrance: CTA fades in last */
+@keyframes ctaEntrance {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        animation: pulseInstruction 2s ease-in-out 0.5s infinite;
+    }
+}
+
+/* After entrance completes, pulse the CTA */
+.click-to-open.animate-pulse {
+    animation: pulseInstruction 2s ease-in-out infinite;
+}
+
+@keyframes pulseInstruction {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+/* Floral bouquets fade in with slight scale */
+@keyframes floralFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.7) rotate(-15deg);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) rotate(-15deg);
+    }
+}
+
+/* Wax seal subtle glow pulse */
+@keyframes sealPulse {
+    0%, 100% {
+        box-shadow: 0 5px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(77, 58, 14, 0.15), inset 0 2px 3px rgba(255, 255, 255, 0.35);
+    }
+    50% {
+        box-shadow: 0 0 15px rgba(230, 197, 108, 0.4), 0 5px 12px rgba(0, 0, 0, 0.16), 0 2px 4px rgba(77, 58, 14, 0.15), inset 0 2px 3px rgba(255, 255, 255, 0.35);
+    }
+}
+
+/* ==========================================
+   AMBIENT FALLING PETALS ANIMATION
+=========================================== */
+.falling-petals {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.petal {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.75);
+    border-radius: 150% 0 150% 150%;
+    width: 15px;
+    height: 15px;
+    animation: fall 8s infinite linear;
+    opacity: 0;
+    filter: blur(0.5px);
+}
+
+.petal:nth-child(1) { left: 10%; width: 12px; height: 12px; animation-delay: 0s; animation-duration: 7s; }
+.petal:nth-child(2) { left: 25%; width: 16px; height: 16px; animation-delay: 1.5s; animation-duration: 9s; }
+.petal:nth-child(3) { left: 40%; width: 14px; height: 14px; animation-delay: 3s; animation-duration: 8s; }
+.petal:nth-child(4) { left: 55%; width: 18px; height: 18px; animation-delay: 0.5s; animation-duration: 10s; }
+.petal:nth-child(5) { left: 70%; width: 12px; height: 12px; animation-delay: 4.5s; animation-duration: 7.5s; }
+.petal:nth-child(6) { left: 85%; width: 15px; height: 15px; animation-delay: 2s; animation-duration: 8.5s; }
+.petal:nth-child(7) { left: 15%; width: 14px; height: 14px; animation-delay: 5s; animation-duration: 9.5s; }
+.petal:nth-child(8) { left: 65%; width: 16px; height: 16px; animation-delay: 6s; animation-duration: 8s; }
+.petal:nth-child(9) { left: 90%; width: 13px; height: 13px; animation-delay: 1s; animation-duration: 7s; }
+
+@keyframes fall {
+    0% {
+        top: -5%;
+        transform: translateX(0) rotate(0deg);
+        opacity: 0;
+    }
+    10% {
+        opacity: 0.8;
+    }
+    90% {
+        opacity: 0.8;
+    }
+    100% {
+        top: 105%;
+        transform: translateX(80px) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* ==========================================
+   STANDARD WEBSITE OVERRIDES
+=========================================== */
+/* Ensure font families load correctly with fallback fonts */
+body, h1, h2, h3, h4, h5, h6, .navigation, .navbar-nav {
+    font-family: 'Jost', sans-serif !important;
+}
+
+/* Script headings and decorative cursive elements use Sail */
+.slide-title-sub h3, 
+.wpo-section-title span, 
+.wpo-section-area .wpo-section-title span,
+.couple-text h3,
+.footer-builder h3 {
+    font-family: 'Sail', cursive !important;
+}
+
+/* Custom CSS classes for section clarity and spacing */
+section, .section-padding {
+    position: relative;
+    overflow: hidden;
+}
+
+/* Image responsive alignment */
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Background SVGs path default colors if not defined inline */
+.bg-path {
+    fill: #f5f6f4;
+}
+.bg-stroke {
+    stroke: #e2e5e0;
+}
+
+/* Align parallax layer item overlays */
+.pointparallax {
+    position: relative;
+}
+.static-hero-img-inner {
+    position: relative;
+    z-index: 1;
+}
+
+/* Set local folder paths for standard WooCommerce assets if needed */
+.woocommerce-Price-currencySymbol {
+    color: #b59b6d;
+}
+
+/* ==========================================
+   CALENDAR SECTION
+=========================================== */
+.habibi-calendar {
+    background-color: #ffffff;
+    padding: 100px 0;
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.calendar-circle-wrapper {
+    position: relative;
+    display: inline-flex;
+    justify-content: center;
+    padding: 40px; /* Space for the flowers to spill out */
+}
+
+.calendar-circle {
+    width: 540px;
+    height: 540px;
+    border: 3px solid #b59b6d; /* Golden ring */
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+}
+
+.calendar-line-floral {
+    position: absolute;
+    width: 180px;
+    z-index: 1;
+}
+
+.calendar-line-floral img {
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05));
+}
+
+.calendar-line-floral.top-right {
+    top: -30px;
+    right: -40px;
+    transform: rotate(45deg);
+}
+
+.calendar-line-floral.bottom-left {
+    bottom: -30px;
+    left: -60px;
+    transform: rotate(-30deg);
+}
+
+.calendar-inner {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    width: 85%;
+}
+
+.calendar-header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.calendar-month-script {
+    font-family: 'Sail', cursive !important;
+    font-size: 56px;
+    color: #2d3a28;
+    margin-bottom: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 15px;
+}
+
+.calendar-year {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 32px;
+    color: #2d3a28;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 15px 10px;
+    text-align: center;
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+.calendar-day-name {
+    font-family: 'Jost', sans-serif !important;
+    font-size: 15px;
+    font-weight: 600;
+    color: #a88d4d;
+    margin-bottom: 15px;
+}
+
+.calendar-day {
+    font-family: 'Jost', sans-serif !important;
+    font-size: 16px;
+    color: #333;
+    position: relative;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.calendar-day.empty {
+    visibility: hidden;
+}
+
+.calendar-day.highlighted {
+    font-weight: bold;
+    color: #fff;
+    z-index: 1;
+}
+
+.calendar-day.highlighted span {
+    position: relative;
+    z-index: 2;
+}
+
+.heart-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    transform: translate(-50%, -50%);
+    z-index: -1;
+    animation: heartBeat 1.5s infinite ease-in-out;
+}
+
+.heart-bg::before,
+.heart-bg::after {
+    content: "";
+    position: absolute;
+    top: 4px;
+    width: 20px;
+    height: 32px;
+    border-radius: 20px 20px 0 0;
+    background: #d34a4a; /* Bright red to match reference */
+}
+
+.heart-bg::before {
+    left: 20px;
+    transform: rotate(-45deg);
+    transform-origin: 0 100%;
+}
+
+.heart-bg::after {
+    left: 0;
+    transform: rotate(45deg);
+    transform-origin: 100% 100%;
+}
+
+@keyframes heartBeat {
+    0% { transform: translate(-50%, -50%) scale(1); }
+    15% { transform: translate(-50%, -50%) scale(1.15); }
+    30% { transform: translate(-50%, -50%) scale(1); }
+    45% { transform: translate(-50%, -50%) scale(1.15); }
+    60% { transform: translate(-50%, -50%) scale(1); }
+    100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+@media (max-width: 767px) {
+    .calendar-circle-wrapper { padding: 30px 15px; }
+    .calendar-circle {
+        width: 420px;
+        height: 420px;
+    }
+    .calendar-inner { width: 80%; }
+    .calendar-header { margin-bottom: 10px; }
+    .calendar-month-script { font-size: 42px; gap: 10px; }
+    .calendar-year { font-size: 24px; }
+    
+    .calendar-grid { gap: 4px 2px; }
+    .calendar-day-name { font-size: 11px; margin-bottom: 2px; }
+    .calendar-day { font-size: 13px; height: 25px; }
+    
+    /* Scale heart down */
+    .heart-bg { width: 32px; height: 32px; }
+    .heart-bg::before, .heart-bg::after {
+        width: 16px; height: 26px; top: 2px; border-radius: 16px 16px 0 0;
+    }
+    .heart-bg::before { left: 16px; }
+}
+
+@media (max-width: 575px) {
+    .calendar-circle-wrapper { padding: 20px 10px; }
+    .calendar-circle {
+        width: 340px;
+        height: 340px;
+    }
+    .calendar-inner { width: 75%; }
+    
+    .calendar-line-floral { width: 120px; }
+    .calendar-line-floral.top-right { right: -20px; top: -15px; }
+    .calendar-line-floral.bottom-left { left: -30px; bottom: -15px; }
+    
+    .calendar-header { margin-bottom: 5px; }
+    .calendar-month-script { font-size: 32px; gap: 6px; }
+    .calendar-year { font-size: 20px; }
+    
+    .calendar-grid { gap: 2px 2px; }
+    .calendar-day-name { font-size: 9px; margin-bottom: 0px; }
+    .calendar-day { font-size: 11px; height: 22px; }
+    
+    /* Scale heart down */
+    .heart-bg { width: 28px; height: 28px; }
+    .heart-bg::before, .heart-bg::after {
+        width: 14px; height: 22px; top: 2px; border-radius: 14px 14px 0 0;
+    }
+    .heart-bg::before { left: 14px; }
+}
+
+@media (max-width: 380px) {
+    .calendar-circle-wrapper { padding: 15px 5px; }
+    .calendar-circle {
+        width: 290px;
+        height: 290px;
+    }
+    .calendar-inner { width: 75%; }
+    
+    .calendar-line-floral { width: 100px; }
+    
+    .calendar-header { margin-bottom: 2px; }
+    .calendar-month-script { font-size: 28px; gap: 4px; }
+    .calendar-year { font-size: 16px; }
+    
+    .calendar-grid { gap: 0px 0px; width: 100%; margin: 0 auto; }
+    .calendar-day-name { font-size: 8px; margin-bottom: 0px; }
+    .calendar-day { font-size: 10px; height: 18px; }
+    
+    /* Scale heart down further */
+    .heart-bg { width: 22px; height: 22px; }
+    .heart-bg::before, .heart-bg::after {
+        width: 11px; height: 17px; top: 2px; border-radius: 11px 11px 0 0;
+    }
+    .heart-bg::before { left: 11px; }
+}
+
+/* ==========================================
+   MINIMAL BOTTOM CALENDAR SECTION
+=========================================== */
+.bottom-calendar-section {
+    background-color: #ffffff;
+    position: relative;
+    overflow: hidden;
+    padding: 120px 0;
+}
+
+.bottom-calendar-floral {
+    position: absolute;
+    width: 350px;
+    z-index: 0;
+    opacity: 0.8;
+}
+
+.bottom-calendar-floral img {
+    width: 100%;
+}
+
+.bottom-calendar-floral.top-right {
+    top: -50px;
+    right: -100px;
+    transform: rotate(180deg);
+}
+
+.bottom-calendar-floral.bottom-left {
+    bottom: -50px;
+    left: -100px;
+}
+
+.bottom-calendar-wrapper {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+}
+
+.bc-title {
+    font-family: 'Sail', cursive !important;
+    font-size: 65px;
+    color: #333;
+    margin-bottom: 20px;
+    line-height: 1;
+}
+
+.bc-month {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 20px;
+    color: #555;
+    letter-spacing: 5px;
+    margin-bottom: 40px;
+}
+
+.bc-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 15px;
+    max-width: 400px;
+    margin: 0 auto 50px;
+}
+
+.bc-day {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 16px;
+    color: #555;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.bc-day.empty {
+    visibility: hidden;
+}
+
+.bc-day.highlighted {
+    font-weight: normal;
+}
+
+.bc-day.highlighted .heart-outline {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 45px;
+    height: 45px;
+    transform: translate(-50%, -50%) rotate(-5deg); /* Slight rotation for hand-drawn feel */
+    fill: none;
+    stroke: #333;
+    stroke-width: 1.5px;
+    z-index: 1;
+}
+
+.bc-day.highlighted span {
+    position: relative;
+    z-index: 2;
+}
+
+.bc-footer {
+    text-align: center;
+}
+
+.bc-names {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 18px;
+    color: #333;
+    letter-spacing: 4px;
+    margin-bottom: 10px;
+}
+
+.bc-location {
+    font-family: 'Playfair Display', serif !important;
+    font-size: 16px;
+    color: #777;
+    letter-spacing: 3px;
+    margin-bottom: 0;
+}
+
+@media (max-width: 767px) {
+    .bc-title { font-size: 50px; }
+    .bottom-calendar-floral { width: 250px; }
+    .bottom-calendar-floral.top-right { right: -80px; }
+    .bottom-calendar-floral.bottom-left { left: -80px; }
+    .bc-grid { gap: 10px; }
+}
+
+@media (max-width: 575px) {
+    .bc-title { font-size: 42px; }
+    .bc-month { font-size: 16px; letter-spacing: 3px; margin-bottom: 30px; }
+    .bottom-calendar-floral { width: 180px; }
+    .bc-grid { gap: 5px; }
+    .bc-day { font-size: 14px; height: 30px; }
+    .bc-day.highlighted .heart-outline { width: 35px; height: 35px; }
+    .bc-names { font-size: 15px; letter-spacing: 2px; }
+    .bc-location { font-size: 13px; letter-spacing: 2px; }
+}
