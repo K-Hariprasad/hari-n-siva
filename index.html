@@ -674,7 +674,8 @@
                 top: 0;
                 left: 0;
                 width: 100%;
-                height: 100%;
+                height: 100vh;
+                height: 100lvh; /* Avoid resizing when address bar shows/hides on iOS Safari */
                 background-image: url('assets/images/video_parallax_bg.png');
                 background-position: center;
                 background-repeat: no-repeat;
@@ -682,6 +683,12 @@
                 z-index: -1;
                 will-change: transform;
                 pointer-events: none;
+                
+                /* Force GPU layer acceleration for buttery-smooth mobile scrolling */
+                -webkit-transform: translate3d(0, 0, 0);
+                transform: translate3d(0, 0, 0);
+                -webkit-backface-visibility: hidden;
+                backface-visibility: hidden;
             }
             .video-content {
                 position: relative;
