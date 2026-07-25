@@ -194,6 +194,7 @@ html.scroll-lock, body.scroll-lock {
 
 /* Front side of the flap (seen when closed) - Deep Olive Green */
 .lid.one {
+  background-color: #5d6e4d; /* Fallback solid color while texture loads */
   background-image: linear-gradient(180deg, rgba(109, 127, 92, 0.85) 0%, rgba(93, 110, 77, 0.95) 100%), url('../images/envelope_texture.png');
   background-size: 100% 100%, 300px;
   background-blend-mode: multiply;
@@ -233,6 +234,7 @@ html.scroll-lock, body.scroll-lock {
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #5d6e4d; /* Fallback solid color while texture loads */
   background-image: linear-gradient(30deg, rgba(93, 110, 77, 0.95) 0%, rgba(109, 127, 92, 0.85) 100%), url('../images/envelope_texture.png');
   background-size: 100% 100%, 300px;
   background-blend-mode: multiply;
@@ -247,6 +249,7 @@ html.scroll-lock, body.scroll-lock {
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #5d6e4d; /* Fallback solid color while texture loads */
   background-image: linear-gradient(-30deg, rgba(93, 110, 77, 0.95) 0%, rgba(109, 127, 92, 0.85) 100%), url('../images/envelope_texture.png');
   background-size: 100% 100%, 300px;
   background-blend-mode: multiply;
@@ -260,6 +263,7 @@ html.scroll-lock, body.scroll-lock {
   left: 0;
   width: 100%;
   height: 100%;
+  background-color: #4c5a3c; /* Fallback solid color while texture loads */
   background-image: linear-gradient(0deg, rgba(80, 95, 65, 0.95) 0%, rgba(93, 110, 77, 0.85) 100%), url('../images/envelope_texture.png');
   background-size: 100% 100%, 300px;
   background-blend-mode: multiply;
@@ -276,12 +280,16 @@ html.scroll-lock, body.scroll-lock {
   background-color: #ffffff;
   border-radius: 4px;
   z-index: 2;
-  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
   align-items: center;
   justify-content: center;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
   transform: translateY(0);
+  
+  /* Prevent content painting glitch on load by keeping the letter hidden until envelope is opened */
+  opacity: 0;
+  visibility: hidden;
+  transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease, visibility 0.4s ease;
 }
 
 .letter-inner {
@@ -371,6 +379,8 @@ html.scroll-lock, body.scroll-lock {
 
 .wrapper.opened .letter {
   transform: translateY(-70px) scale(1.02); /* Pop up less so the inverted triangle flap is visible behind it */
+  opacity: 1;
+  visibility: visible;
   transition-delay: 0.6s;
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1); /* Elevated letter shadow */
 }
