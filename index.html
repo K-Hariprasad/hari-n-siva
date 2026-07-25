@@ -1275,6 +1275,10 @@
                         <div class="bottom-calendar-wrapper wow fadeInUp" data-wow-duration="1400ms">
                             <h2 class="bc-title">save our date</h2>
                             <h3 class="bc-month">AUGUST 2026</h3>
+                            <div class="bc-click-hint">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 2px;"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                Tap highlighted dates to add to calendar
+                            </div>
 
                             <div class="bc-grid">
                                 <!-- Aug 2026: Aug 1 is Saturday. So 6 empty cells in a Sun-Sat grid -->
@@ -1360,6 +1364,28 @@
         <div class="music-mute-line"></div>
     </div>
 
+    <!-- Calendar Event Modal -->
+    <div id="calendar-modal" class="calendar-modal-overlay">
+        <div class="calendar-modal-content">
+            <button class="calendar-modal-close" id="calendar-modal-close" aria-label="Close modal">&times;</button>
+            <div class="calendar-modal-header">
+                <h4 id="calendar-modal-title">Save the Date</h4>
+                <p id="calendar-modal-date"></p>
+            </div>
+            <div class="calendar-modal-body">
+                <p id="calendar-modal-desc"></p>
+                <p class="calendar-modal-loc">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 4px; color: #b59b6d;"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span id="calendar-modal-loc-text"></span>
+                </p>
+            </div>
+            <div class="calendar-modal-footer">
+                <a id="calendar-modal-google" href="#" target="_blank" class="calendar-btn google">Google Calendar</a>
+                <a id="calendar-modal-apple" href="#" class="calendar-btn apple">Apple Calendar</a>
+            </div>
+        </div>
+    </div>
+
     <!-- Core Script Files -->
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"
         integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
@@ -1411,78 +1437,89 @@
             }
 
             // ==========================================
-            // Option 1: "Add to Calendar" Popover Implementation
+            // Option 1: "Add to Calendar" Modal Popup Implementation
             // ==========================================
-            highlightedDays.forEach(day => {
-                // Get event details from data attributes
-                const date = day.getAttribute('data-date');
-                const title = day.getAttribute('data-title');
-                const location = day.getAttribute('data-location');
-                const startTime = day.getAttribute('data-start-time');
-                const endTime = day.getAttribute('data-end-time');
-                const description = day.getAttribute('data-description');
+            const modalEl = document.getElementById('calendar-modal');
+            const modalTitle = document.getElementById('calendar-modal-title');
+            const modalDate = document.getElementById('calendar-modal-date');
+            const modalDesc = document.getElementById('calendar-modal-desc');
+            const modalLoc = document.getElementById('calendar-modal-loc-text');
+            const modalGoogle = document.getElementById('calendar-modal-google');
+            const modalApple = document.getElementById('calendar-modal-apple');
+            const modalClose = document.getElementById('calendar-modal-close');
 
+            highlightedDays.forEach(day => {
+                const date = day.getAttribute('data-date');
                 if (!date) return; // Skip if no event details
                 
-                // Create popover elements
-                const popover = document.createElement('div');
-                popover.className = 'bc-calendar-popover';
-                
-                // Google Calendar Link
-                const googleDateStr = date.replace(/-/g, '') + 'T' + startTime.replace(/:/g, '') + '00/' + date.replace(/-/g, '') + 'T' + endTime.replace(/:/g, '') + '00';
-                const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${googleDateStr}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
-                
-                const googleLink = document.createElement('a');
-                googleLink.href = googleUrl;
-                googleLink.target = '_blank';
-                googleLink.innerText = 'Google Calendar';
-                
-                // Apple/iCal Calendar Link
-                const appleLink = document.createElement('a');
-                appleLink.href = '#';
-                appleLink.innerText = 'Apple Calendar';
-                appleLink.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    downloadIcs(date, startTime, endTime, title, description, location);
-                });
-                
-                popover.appendChild(googleLink);
-                popover.appendChild(appleLink);
-                day.appendChild(popover);
-                
-                // Stop click propagation inside popover to prevent parent click toggle close
-                popover.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                });
-                
-                // Toggle popover on click
                 day.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent immediate body click close
+                    e.stopPropagation();
                     
-                    const isOpening = !popover.classList.contains('active');
+                    const title = day.getAttribute('data-title');
+                    const location = day.getAttribute('data-location');
+                    const startTime = day.getAttribute('data-start-time');
+                    const endTime = day.getAttribute('data-end-time');
+                    const description = day.getAttribute('data-description');
                     
-                    // Close all other popovers and reset stacking layers
-                    document.querySelectorAll('.bc-calendar-popover').forEach(p => {
-                        p.classList.remove('active');
-                        p.parentElement.classList.remove('active-parent');
+                    // Format Date for Display: "August 30, 2026"
+                    const parsedDate = new Date(date);
+                    const formattedDate = parsedDate.toLocaleDateString('en-US', {
+                        month: 'long',
+                        day: 'numeric',
+                        year: 'numeric'
                     });
                     
-                    if (isOpening) {
-                        popover.classList.add('active');
-                        day.classList.add('active-parent');
-                    }
+                    // Populate Modal content
+                    modalTitle.innerText = title;
+                    modalDate.innerText = `${formattedDate} @ ${startTime}`;
+                    modalDesc.innerText = description;
+                    modalLoc.innerText = location;
+                    
+                    // Google Calendar Link
+                    const googleDateStr = date.replace(/-/g, '') + 'T' + startTime.replace(/:/g, '') + '00/' + date.replace(/-/g, '') + 'T' + endTime.replace(/:/g, '') + '00';
+                    const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${googleDateStr}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
+                    modalGoogle.href = googleUrl;
+                    
+                    // Apple Calendar Link (Recreate click handler to capture current variables)
+                    const oldAppleBtn = modalApple.cloneNode(true);
+                    modalApple.parentNode.replaceChild(oldAppleBtn, modalApple);
+                    
+                    // Get reference to the newly replaced element
+                    const newAppleApple = document.getElementById('calendar-modal-apple');
+                    newAppleApple.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        downloadIcs(date, startTime, endTime, title, description, location);
+                    });
+                    
+                    // Open Modal
+                    modalEl.classList.add('active');
                 });
             });
-            
-            // Close popovers when clicking outside
-            document.addEventListener('click', () => {
-                document.querySelectorAll('.bc-calendar-popover').forEach(p => {
-                    p.classList.remove('active');
-                    p.parentElement.classList.remove('active-parent');
+
+            // Close modal button
+            if (modalClose) {
+                modalClose.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    modalEl.classList.remove('active');
                 });
-            });
-            
+            }
+
+            // Close modal by clicking outside content card
+            if (modalEl) {
+                modalEl.addEventListener('click', (e) => {
+                    modalEl.classList.remove('active');
+                });
+                
+                // Stop click events inside modal content card from bubbling and closing modal
+                const modalContent = modalEl.querySelector('.calendar-modal-content');
+                if (modalContent) {
+                    modalContent.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+            }
+
             // Helper function to build & download standard .ics file
             function downloadIcs(dateStr, start, end, summary, desc, loc) {
                 const startStr = dateStr.replace(/-/g, '') + 'T' + start.replace(/:/g, '') + '00';
