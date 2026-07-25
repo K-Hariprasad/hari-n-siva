@@ -1318,14 +1318,14 @@
                                 <div class="bc-day">28</div>
                                 <div class="bc-day">29</div>
 
-                                <div class="bc-day highlighted">
+                                <div class="bc-day highlighted" onclick="" data-date="2026-08-30" data-title="Hariprasad & Sivekshna's Wedding Ceremony & Reception" data-location="4517 Washington Ave. Manchester, Kentucky 39495" data-start-time="13:00" data-end-time="20:30" data-description="Join us for our wedding ceremony and reception!">
                                     <svg class="heart-outline" viewBox="0 0 32 29.6">
                                         <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
                                       c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
                                     </svg>
                                     <span>30</span>
                                 </div>
-                                <div class="bc-day highlighted">
+                                <div class="bc-day highlighted" onclick="" data-date="2026-08-31" data-title="Hariprasad & Sivekshna's Post-Wedding Celebration" data-location="4517 Washington Ave. Manchester, Kentucky 39495" data-start-time="18:30" data-end-time="21:30" data-description="Join us for a post-wedding celebration dinner!">
                                     <svg class="heart-outline" viewBox="0 0 32 29.6">
                                         <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
                                       c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z" />
@@ -1344,6 +1344,20 @@
             </div>
         </section>
         <!-- Minimal Calendar Section End -->
+    </div>
+
+    <!-- Ambient Background Music Element -->
+    <audio id="bg-wedding-track" src="https://upload.wikimedia.org/wikipedia/commons/e/e4/Nocturne_in_E_flat_major%2C_Op._9_no._2.mp3" loop></audio>
+
+    <!-- Floating Music Controller -->
+    <div id="music-controller" class="muted" title="Mute/Play Music">
+        <div class="eq-bars">
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+            <div class="eq-bar"></div>
+        </div>
+        <div class="music-mute-line"></div>
     </div>
 
     <!-- Core Script Files -->
@@ -1371,6 +1385,9 @@
     <script src="assets/js/app.js?v=1.11"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            // ==========================================
+            // Heart Outline Scroll Animation
+            // ==========================================
             const highlightedDays = document.querySelectorAll('.bc-day.highlighted');
             
             if (highlightedDays.length > 0) {
@@ -1390,6 +1407,129 @@
                 
                 highlightedDays.forEach(day => {
                     observer.observe(day);
+                });
+            }
+
+            // ==========================================
+            // Option 1: "Add to Calendar" Popover Implementation
+            // ==========================================
+            highlightedDays.forEach(day => {
+                // Get event details from data attributes
+                const date = day.getAttribute('data-date');
+                const title = day.getAttribute('data-title');
+                const location = day.getAttribute('data-location');
+                const startTime = day.getAttribute('data-start-time');
+                const endTime = day.getAttribute('data-end-time');
+                const description = day.getAttribute('data-description');
+
+                if (!date) return; // Skip if no event details
+                
+                // Create popover elements
+                const popover = document.createElement('div');
+                popover.className = 'bc-calendar-popover';
+                
+                // Google Calendar Link
+                const googleDateStr = date.replace(/-/g, '') + 'T' + startTime.replace(/:/g, '') + '00/' + date.replace(/-/g, '') + 'T' + endTime.replace(/:/g, '') + '00';
+                const googleUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(title)}&dates=${googleDateStr}&details=${encodeURIComponent(description)}&location=${encodeURIComponent(location)}`;
+                
+                const googleLink = document.createElement('a');
+                googleLink.href = googleUrl;
+                googleLink.target = '_blank';
+                googleLink.innerText = 'Google Calendar';
+                
+                // Apple/iCal Calendar Link
+                const appleLink = document.createElement('a');
+                appleLink.href = '#';
+                appleLink.innerText = 'Apple Calendar';
+                appleLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    downloadIcs(date, startTime, endTime, title, description, location);
+                });
+                
+                popover.appendChild(googleLink);
+                popover.appendChild(appleLink);
+                day.appendChild(popover);
+                
+                // Stop click propagation inside popover to prevent parent click toggle close
+                popover.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                });
+                
+                // Toggle popover on click
+                day.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent immediate body click close
+                    
+                    const isOpening = !popover.classList.contains('active');
+                    
+                    // Close all other popovers and reset stacking layers
+                    document.querySelectorAll('.bc-calendar-popover').forEach(p => {
+                        p.classList.remove('active');
+                        p.parentElement.classList.remove('active-parent');
+                    });
+                    
+                    if (isOpening) {
+                        popover.classList.add('active');
+                        day.classList.add('active-parent');
+                    }
+                });
+            });
+            
+            // Close popovers when clicking outside
+            document.addEventListener('click', () => {
+                document.querySelectorAll('.bc-calendar-popover').forEach(p => {
+                    p.classList.remove('active');
+                    p.parentElement.classList.remove('active-parent');
+                });
+            });
+            
+            // Helper function to build & download standard .ics file
+            function downloadIcs(dateStr, start, end, summary, desc, loc) {
+                const startStr = dateStr.replace(/-/g, '') + 'T' + start.replace(/:/g, '') + '00';
+                const endStr = dateStr.replace(/-/g, '') + 'T' + end.replace(/:/g, '') + '00';
+                
+                const icsContent = [
+                    'BEGIN:VCALENDAR',
+                    'VERSION:2.0',
+                    'PRODID:-//Wedding Invitation//NONSGML v1.0//EN',
+                    'BEGIN:VEVENT',
+                    `DTSTART:${startStr}`,
+                    `DTEND:${endStr}`,
+                    `SUMMARY:${summary}`,
+                    `DESCRIPTION:${desc}`,
+                    `LOCATION:${loc}`,
+                    'END:VEVENT',
+                    'END:VCALENDAR'
+                ].join('\r\n');
+                
+                const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8;' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.setAttribute('download', 'wedding-event.ics');
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
+
+            // ==========================================
+            // Option 2: Floating Audio Equalizer Control
+            // ==========================================
+            const bgAudioEl = document.getElementById('bg-wedding-track');
+            const musicCtrl = document.getElementById('music-controller');
+            
+            if (bgAudioEl && musicCtrl) {
+                musicCtrl.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Avoid closing calendar popovers
+                    if (bgAudioEl.paused) {
+                        bgAudioEl.volume = 0.5;
+                        bgAudioEl.play();
+                        musicCtrl.classList.remove('muted');
+                        musicCtrl.classList.add('playing');
+                    } else {
+                        bgAudioEl.pause();
+                        musicCtrl.classList.add('muted');
+                        musicCtrl.classList.remove('playing');
+                    }
                 });
             }
         });

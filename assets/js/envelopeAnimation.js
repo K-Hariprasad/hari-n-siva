@@ -28,6 +28,33 @@ document.addEventListener('DOMContentLoaded', function () {
     // Apply the opened class to initiate the css transitions
     wrapper.classList.add('opened');
 
+    // Play the background wedding track
+    var bgAudio = document.getElementById('bg-wedding-track');
+    var musicController = document.getElementById('music-controller');
+    if (bgAudio) {
+      bgAudio.volume = 0; // Start at 0 volume
+      bgAudio.play().then(function() {
+        // Fade in volume to 0.5 over 1.5 seconds
+        var targetVolume = 0.5;
+        var step = 0.05;
+        var intervalTime = 150; // 1.5s / 10 steps = 150ms
+        var fadeInterval = setInterval(function() {
+          if (bgAudio.volume < targetVolume) {
+            bgAudio.volume = Math.min(targetVolume, bgAudio.volume + step);
+          } else {
+            clearInterval(fadeInterval);
+          }
+        }, intervalTime);
+        
+        if (musicController) {
+          musicController.classList.remove('muted');
+          musicController.classList.add('playing');
+        }
+      }).catch(function(err) {
+        console.log('Audio autoplay blocked or failed:', err);
+      });
+    }
+
     // Play a subtle paper slide sound effect
     var audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-84.wav');
     audio.volume = 0.4;
